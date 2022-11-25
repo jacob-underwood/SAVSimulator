@@ -5,7 +5,7 @@ import java.util.LinkedList;
 /**
  * Bus which determines its destination by averaging everyone's destination and then finding a real destination that is closest to the average.
  */
-public class AverageBus extends Bus<LinkedList<Person>> {
+public class AverageBus extends LinkedBus {
 
 	public AverageBus(Intersection location, int capacity, City city) {
 		super(location, capacity, city);
@@ -20,7 +20,8 @@ public class AverageBus extends Bus<LinkedList<Person>> {
 	 */
 	@Override
 	public void generateDestination() {
-		
+		Intersection average = findAverageDestination();
+		setDestination(findClosestDestination(average));
 	}
 	
 	/**
@@ -29,18 +30,21 @@ public class AverageBus extends Bus<LinkedList<Person>> {
 	 * @return Intersection of passengers' average destination.
 	 */
 	private Intersection findAverageDestination() {
-		return null;
-	}
-	
-	
-	/**
-	 * Finds closest destination of a passenger from input intersection.
-	 * 
-	 * @param intersection Intersection that may or may not be a destination of a passenger.
-	 * @return Intersection closest to intersection that is a destination of a passenger.
-	 */
-	private Intersection findClosestDestination(Intersection intersection) {
-		return null;
+		int sumX = 0;
+		int sumY = 0;
+		
+		for (Person passenger : passengers) {
+			sumX += passenger.getDestination().getX();
+			sumY += passenger.getDestination().getY();
+		}
+		
+		// Using round should never return an index not in the grid.
+		int averageX = Math.round((float) sumX / passengers.size());
+		int averageY = Math.round((float) sumY / passengers.size());
+		
+		Intersection average = getCity().getGrid()[averageY][averageX];
+		
+		return average;
 	}
 	
 }

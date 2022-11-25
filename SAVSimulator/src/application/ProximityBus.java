@@ -5,7 +5,7 @@ import java.util.LinkedList;
 /**
  * Bus which has the destination of the person with the closest destination.
  */
-public class ProximityBus extends Bus<LinkedList<Person>> {
+public class ProximityBus extends LinkedBus {
 
 	public ProximityBus(Intersection location, int capacity, City city) {
 		super(location, capacity, city);

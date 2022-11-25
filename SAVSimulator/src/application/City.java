@@ -69,5 +69,12 @@ public class City {
 	public PriorityQueue<Person> getPeopleAtIntersection(Intersection intersection) {
 		return null;
 	}
+	
+	/**
+	 * @return the grid
+	 */
+	public Intersection[][] getGrid() {
+		return grid;
+	}
 
 }
