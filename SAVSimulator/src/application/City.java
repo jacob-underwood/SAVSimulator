@@ -2,6 +2,7 @@ package application;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.PriorityQueue;
 
 /**
  * Simulation driver.
@@ -13,6 +14,9 @@ public class City {
 	private LinkedList<Person> people;
 	// List of all buses; number does not change after instantiated.
 	private Bus[] buses;
+	// All Intersections in a city.
+	private Intersection[][] grid;
+	
 	// Current step (time) the simulation is on. For example, each step could be 1
 	// minute.
 	private int step;
@@ -38,10 +42,32 @@ public class City {
 	}
 
 	/**
-	 * Creates all people and buses at the start of the program.
+	 * Creates all people, buses, and intersections at the start of the program.
 	 */
 	public void setupSimulation() {
 
+	}
+	
+	/**
+	 * Gets the intersection one over from the supplied intersection in the given direction.
+	 * 
+	 * @param intersection Intersection to use as starting location.
+	 * @param direction Direction returned Intersection should be in.
+	 * @return Intersection one over in given direction.
+	 * @throws ArrayIndexOutOfBoundsException If called on an edge or corner intersection in the grid, one cannot go off the grid.
+	 */
+	public Intersection oneOver(Intersection intersection, Direction direction) throws ArrayIndexOutOfBoundsException {
+		return null;
+	}
+	
+	/**
+	 * Returns list of everyone not in a bus at a certain intersection.
+	 * 
+	 * @param intersection Intersection to check for people at.
+	 * @return People at Intersection in a PriorityQueue based on how long they have been waiting.
+	 */
+	public PriorityQueue<Person> getPeopleAtIntersection(Intersection intersection) {
+		return null;
 	}
 
 }

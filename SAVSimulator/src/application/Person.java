@@ -13,9 +13,12 @@ public class Person {
 
 	// Current location of person, whether they are in bus or not.
 	private Intersection location;
+	// Goal location of a person. Does not change.
+	private final Intersection DESTINATION;
 
-	public Person(Intersection location) {
+	public Person(Intersection location, Intersection destination) {
 		this.location = location;
+		this.DESTINATION = destination;
 		timeInBus = 0;
 		timeAtStop = 0;
 		inBus = false;
@@ -53,6 +56,10 @@ public class Person {
 	 */
 	public Intersection getLocation() {
 		return location;
+	}
+	
+	public Intersection getDestination() {
+		return DESTINATION;
 	}
 
 	/**

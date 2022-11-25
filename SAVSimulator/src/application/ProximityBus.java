@@ -1,12 +1,16 @@
 package application;
 
+import java.util.LinkedList;
+
 /**
  * Bus which has the destination of the person with the closest destination.
  */
-public class ProximityBus extends Bus {
+public class ProximityBus extends Bus<LinkedList<Person>> {
 
-	public ProximityBus(Intersection location, int capacity) {
-		super(location, capacity);
+	public ProximityBus(Intersection location, int capacity, City city) {
+		super(location, capacity, city);
+		
+		passengers = new LinkedList<>();
 	}
 
 	/**
@@ -15,16 +19,8 @@ public class ProximityBus extends Bus {
 	 */
 	@Override
 	public void generateDestination() {
-
-	}
-
-	/**
-	 * Runs through all of the passengers' destinations to find the closest one.
-	 * 
-	 * @return The closest Intersection destination.
-	 */
-	private Intersection findClosestDestination() {
-		return null;
+		Intersection destination = findClosestDestination(getLocation());
+		setDestination(destination);
 	}
 
 }

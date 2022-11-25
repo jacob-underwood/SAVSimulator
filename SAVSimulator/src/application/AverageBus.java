@@ -1,13 +1,16 @@
 package application;
 
+import java.util.LinkedList;
+
 /**
  * Bus which determines its destination by averaging everyone's destination and then finding a real destination that is closest to the average.
  */
-public class AverageBus extends Bus {
+public class AverageBus extends Bus<LinkedList<Person>> {
 
-	public AverageBus(Intersection location, int capacity) {
-		super(location, capacity);
+	public AverageBus(Intersection location, int capacity, City city) {
+		super(location, capacity, city);
 		
+		passengers = new LinkedList<>();
 	}
 
 	/**
