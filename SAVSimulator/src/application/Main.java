@@ -37,7 +37,10 @@ public class Main extends Application {
 			primaryStage.setTitle("SAV Simulator");
 
 			primaryStage.show();
+			
+			// Create City object, then run simulation.
 
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
