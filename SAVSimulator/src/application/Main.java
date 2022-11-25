@@ -38,7 +38,7 @@ public class Main extends Application {
 
 			primaryStage.show();
 			
-			// TEMP, MOVE TO City CLASS: while loop using long System.currentTimeMillis(), modulo to create discrete steps.
+			// Create City object, then run simulation.
 
 			
 		} catch (Exception e) {
