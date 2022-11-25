@@ -37,7 +37,10 @@ public class Main extends Application {
 			primaryStage.setTitle("SAV Simulator");
 
 			primaryStage.show();
+			
+			// TEMP, MOVE TO City CLASS: while loop using long System.currentTimeMillis(), modulo to create discrete steps.
 
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
