@@ -28,8 +28,8 @@ public class Main extends Application {
 			Scene scene = new Scene(root, screenSize, screenSize, Color.BLACK);
 
 			// Generate intersection layout. Current total intersections: 225.
-			CityDisplay cityDisplay = new CityDisplay(root);
-			cityDisplay.setupCity(screenSize, 15, 8, 20, 2, 2, 4, 2);
+			CityDisplay cityDisplay = new CityDisplay(root, 15);
+			cityDisplay.setupCity(screenSize, 8, 20, 2, 2, 4, 2);
 
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 
@@ -37,6 +37,11 @@ public class Main extends Application {
 			primaryStage.setTitle("SAV Simulator");
 
 			primaryStage.show();
+			
+			// Testing
+			
+			cityDisplay.addPerson(0, 0);
+			cityDisplay.removePerson(0, 0);
 			
 			// Create City object, then run simulation.
 
