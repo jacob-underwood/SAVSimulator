@@ -9,7 +9,7 @@ public class ProximityBus extends LinkedBus {
 
 	public ProximityBus(Intersection location, int capacity, City city) {
 		super(location, capacity, city);
-		
+
 		passengers = new LinkedList<>();
 	}
 
@@ -19,8 +19,12 @@ public class ProximityBus extends LinkedBus {
 	 */
 	@Override
 	public void generateDestination() {
-		Intersection destination = findClosestDestination(getLocation());
-		setDestination(destination);
+		if (passengers.size() > 0) {
+			Intersection destination = findClosestDestination(getLocation());
+			setDestination(destination);
+		} else {
+			findPeople();
+		}
 	}
 
 }

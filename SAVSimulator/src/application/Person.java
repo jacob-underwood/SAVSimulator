@@ -3,7 +3,7 @@ package application;
 /**
  * Stores time, location, and state information for a person.
  */
-public class Person {
+public class Person implements Comparable<Person> {
 
 	// Steps waited in bus.
 	private int timeInBus;
@@ -34,7 +34,7 @@ public class Person {
 		// TODO: Check how many people are already there. If there are more than can be
 		// displayed, do not allow a person to move there? Or, make a way to display
 		// that there are more.
-		
+
 		location = newLocation;
 
 		return true;
@@ -57,7 +57,7 @@ public class Person {
 	public Intersection getLocation() {
 		return location;
 	}
-	
+
 	public Intersection getDestination() {
 		return DESTINATION;
 	}
@@ -77,7 +77,8 @@ public class Person {
 	}
 
 	/**
-	 * Calculated the total wait time by adding the time waiting inside and outside a bus.
+	 * Calculated the total wait time by adding the time waiting inside and outside
+	 * a bus.
 	 * 
 	 * @return the total wait time
 	 */
@@ -104,6 +105,15 @@ public class Person {
 	 */
 	public void setLocation(Intersection location) {
 		this.location = location;
+	}
+
+	/**
+	 * The person with the longer wait time goes first, so if this has been waiting
+	 * longer than o, the output will be negative.
+	 */
+	@Override
+	public int compareTo(Person o) {
+		return o.getTimeAtStop() - getTimeAtStop();
 	}
 
 }

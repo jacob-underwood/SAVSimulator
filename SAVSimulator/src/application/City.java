@@ -7,7 +7,7 @@ import java.util.PriorityQueue;
 /**
  * Simulation driver.
  */
-public class City {
+public class City implements Runnable {
 
 	// List of all people in simulation; number changes as people reach their
 	// destination and are thus removed from the simulation.
@@ -25,7 +25,31 @@ public class City {
 	private CityDisplay cityDisplay;
 
 	public City(CityDisplay cityDisplay) {
-
+		this.cityDisplay = cityDisplay;
+		
+		this.people = new LinkedList<Person>();
+		this.buses = new Bus[30];
+		this.grid = new Intersection[15][15];
+		this.step = 0;
+	}
+	
+	@Override
+	public void run() {
+		try {
+			int step = 0;
+			
+			while (step < 100) {
+				
+				runSimulation();
+			
+				Thread.sleep(10000);
+				
+				step++;
+				
+			}
+		} catch (InterruptedException e) {
+			System.err.print(e);
+		}
 	}
 
 	/**
@@ -36,16 +60,24 @@ public class City {
 	 * @return Current step.
 	 */
 	public int runSimulation() {
-		// while loop using long System.currentTimeMillis(), modulo to create discrete
-		// steps.
+		
+		
+		
 		return -1;
 	}
 
 	/**
-	 * Creates all people, buses, and intersections at the start of the program.
+	 * Creates all people and buses at the start of the program.
 	 */
 	public void setupSimulation() {
-
+		
+		// Create people
+		int peopleCount = 0;
+		while (peopleCount < 0) {
+			cityDisplay.addPerson(peopleCount, peopleCount);
+			peopleCount++;
+		}
+		
 	}
 	
 	/**
@@ -57,7 +89,13 @@ public class City {
 	 * @throws ArrayIndexOutOfBoundsException If called on an edge or corner intersection in the grid, one cannot go off the grid.
 	 */
 	public Intersection oneOver(Intersection intersection, Direction direction) throws ArrayIndexOutOfBoundsException {
-		return null;
+		switch (direction) {
+			case LEFT: return grid[intersection.getY()][intersection.getX() - 1];
+			case RIGHT: return grid[intersection.getY()][intersection.getX() + 1];
+			case UP: return grid[intersection.getY() - 1][intersection.getX()];
+			case DOWN: return grid[intersection.getY() + 1][intersection.getX()];
+			default: throw new EnumConstantNotPresentException(direction.getClass(), "Valid enum constants for Direction include LEFT, RIGHT, UP, and DOWN");
+		}
 	}
 	
 	/**
@@ -67,7 +105,37 @@ public class City {
 	 * @return People at Intersection in a PriorityQueue based on how long they have been waiting.
 	 */
 	public PriorityQueue<Person> getPeopleAtIntersection(Intersection intersection) {
-		return null;
+		PriorityQueue<Person> peopleAtIntersection = new PriorityQueue<>();
+		
+		for (Person person : people) {
+			// TODO: Make Intersection.equals?
+			if (person.getLocation().equals(intersection)) {
+				peopleAtIntersection.add(person);
+			}
+		}
+		
+		return peopleAtIntersection;
+	}
+	
+	/**
+	 * Returns a PriorityQueue of Intersections in which intersections closer to the input are higher in priority.
+	 * 
+	 * @param intersection Intersection to find close intersections to.
+	 * @return PriorityQueue of close Intersections.
+	 */
+	public PriorityQueue<Intersection> getClosestIntersections(Intersection primary) {
+		RelativeIntersectionComparator intersectionComparator = new RelativeIntersectionComparator(primary);
+		
+		PriorityQueue<Intersection> closeIntersections = new PriorityQueue<Intersection>(grid.length * grid.length, intersectionComparator);
+		
+		// Did not use PriorityQueue.addAll because grid would have to be put into a Collections object.
+		for (Intersection[] intersections : grid) {
+			for (Intersection intersection : intersections) {
+				closeIntersections.add(intersection);
+			}
+		}
+		
+		return closeIntersections;
 	}
 	
 	/**

@@ -9,7 +9,7 @@ public class LinearBus extends Bus<PriorityQueue<Person>> {
 
 	public LinearBus(Intersection location, int capacity, City city) {
 		super(location, capacity, city);
-		
+
 		passengers = new PriorityQueue<>();
 	}
 
@@ -18,9 +18,12 @@ public class LinearBus extends Bus<PriorityQueue<Person>> {
 	 */
 	@Override
 	public void generateDestination() {
-		// TODO: If passengers empty, try to pick people up?
-		Intersection destination = getDestinationOfPersonOnBusLongest();
-		setDestination(destination);
+		if (passengers.size() > 0) {
+			Intersection destination = getDestinationOfPersonOnBusLongest();
+			setDestination(destination);
+		} else {
+			findPeople();
+		}
 	}
 
 	/**

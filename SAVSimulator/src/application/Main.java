@@ -62,6 +62,12 @@ public class Main extends Application {
 			
 			// Create City object, then run simulation.
 
+//			City city = new City(cityDisplay);
+			
+//			city.runSimulation();
+			
+			CityThread cityThread = new CityThread();
+			(new Thread(new CityThread())).start();
 			
 		} catch (Exception e) {
 			e.printStackTrace();

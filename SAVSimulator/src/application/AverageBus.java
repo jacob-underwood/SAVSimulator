@@ -20,8 +20,12 @@ public class AverageBus extends LinkedBus {
 	 */
 	@Override
 	public void generateDestination() {
-		Intersection average = findAverageDestination();
-		setDestination(findClosestDestination(average));
+		if (passengers.size() > 0) {
+			Intersection average = findAverageDestination();
+			setDestination(findClosestDestination(average));
+		} else {
+			findPeople();
+		}
 	}
 	
 	/**

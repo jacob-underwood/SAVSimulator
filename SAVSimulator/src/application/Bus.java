@@ -66,6 +66,37 @@ public abstract class Bus<T extends AbstractCollection<Person>> {
 		}
 	}
 
+	/**
+	 * Returns the closest intersection that has a person waiting for a ride. If
+	 * nobody is at the provided intersection, it checks adjacent ones.
+	 * 
+	 * @param intersection Intersection to check.
+	 * @return Intersection of person waiting.
+	 */
+	public Intersection personSearch(Intersection intersection) {
+		PriorityQueue<Intersection> closeIntersections = city.getClosestIntersections(intersection);
+
+		for (int i = 0; i < closeIntersections.size(); i++) {
+			Intersection check = closeIntersections.poll();
+			if (city.getPeopleAtIntersection(check).size() > 0) {
+				return check;
+			}
+		}
+
+		// If everyone has been picked up by a bus, the bus should stay in the same location.
+		return intersection;
+	}
+	
+	/**
+	 * Sets the destination to an intersection that has at least one person waiting for a ride.
+	 */
+	public void findPeople() {
+		setDestination(personSearch(location));
+	}
+
+	/**
+	 * @param destination The destination.
+	 */
 	protected void setDestination(Intersection destination) {
 		this.destination = destination;
 	}
@@ -75,14 +106,14 @@ public abstract class Bus<T extends AbstractCollection<Person>> {
 	 * sets the destination instance variable to that.
 	 */
 	public abstract void generateDestination();
-	
+
 	/**
 	 * @return the location.
 	 */
 	public Intersection getLocation() {
 		return location;
 	}
-	
+
 	/**
 	 * @return the city.
 	 */
