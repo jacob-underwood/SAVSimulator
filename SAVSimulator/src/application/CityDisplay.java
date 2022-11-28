@@ -1,7 +1,10 @@
 package application;
 
+import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
+import javafx.animation.ParallelTransition;
+import javafx.animation.SequentialTransition;
 import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
 import javafx.scene.Group;
@@ -23,12 +26,15 @@ public class CityDisplay {
 	private int gridSize;
 	// Counts how many people are at each intersection.
 	private int[][] gridPersonCount;
+	// Counts how many buses are at each intersections.
+	private int[][] gridBusCount;
 
 	public CityDisplay(Group root, int gridSize) {
 		this.root = root;
 		this.gridSize = gridSize;
 
 		this.gridPersonCount = new int[gridSize][gridSize];
+		this.gridBusCount = new int[gridSize][gridSize];
 	}
 
 	/**
@@ -71,7 +77,7 @@ public class CityDisplay {
 				ring.setStrokeType(StrokeType.OUTSIDE);
 				ring.setStroke(Color.web("red"));
 				ring.setStrokeWidth(ringStrokeSize);
-				ring.setVisible(false);
+				ring.setOpacity(0f);
 				busMarkers.getChildren().add(ring);
 
 				double personRingXRadius = intersectRadius + ringDistance + ringStrokeSize + personDistance;
@@ -80,7 +86,7 @@ public class CityDisplay {
 					Circle person = new Circle(personRadius, Color.web("blue"));
 					person.setCenterX(circle.getCenterX() + personRingXRadius * Math.cos(k * Math.PI / 4));
 					person.setCenterY(circle.getCenterY() + personRingYRadius * Math.sin(k * Math.PI / 4));
-					person.setVisible(false);
+					person.setOpacity(0f);
 					people.getChildren().add(person);
 				}
 			}
@@ -125,44 +131,63 @@ public class CityDisplay {
 	private boolean modifyPerson(int x, int y, boolean add) {
 		// TODO: What to do if number of people exceeds the number that can be
 		// displayed?
-		// TODO: Currently overflows into next intersection (to the right) when eight
+		// Used to overflow into next intersection (to the right) when eight
 		// people are already at an intersection. Though, gridPersonCount maintains the
-		// correct number.
-		Group people = null;
+		// correct number. Now, returns false.
 
-		// Because just getting index 2 from root's children list might be error prone.
-		for (int i = 0; i < root.getChildrenUnmodifiable().size(); i++) {
-			if (root.getChildrenUnmodifiable().get(i).getUserData().equals("people")) {
-				people = (Group) root.getChildrenUnmodifiable().get(i);
+		if (gridPersonCount[y][x] < 8) {
+			Group people = null;
+
+			// Because just getting index 2 from root's children list might be error prone.
+			for (int i = 0; i < root.getChildrenUnmodifiable().size(); i++) {
+				if (root.getChildrenUnmodifiable().get(i).getUserData().equals("people")) {
+					people = (Group) root.getChildrenUnmodifiable().get(i);
+				}
 			}
+
+			int currentNumberPeople = gridPersonCount[y][x];
+
+			// If adding a person, the circle that should be modified should not be
+			// currently used/visible. If removing a person, the circle that should be
+			// modified should be currently used/visible.
+			int indexModifier;
+
+			if (add) {
+				indexModifier = 0;
+			} else {
+				indexModifier = -1;
+			}
+
+			Circle person = (Circle) people.getChildren()
+					.get(y * gridSize * 8 + x * 8 + currentNumberPeople + indexModifier);
+
+			float fromFade;
+			float toFade;
+			if (add) {
+				fromFade = 0f;
+				toFade = 1f;
+			} else {
+				toFade = 0f;
+				fromFade = 1f;
+			}
+
+			// Make person invisible or visible depending on add.
+			FadeTransition fade = new FadeTransition(Duration.millis(1000), person);
+			fade.setFromValue(fromFade);
+			fade.setToValue(toFade);
+			fade.play();
+
+			if (add) {
+				gridPersonCount[y][x]++;
+			} else {
+				gridPersonCount[y][x]--;
+			}
+
+			// TODO: Maybe return number of people being displayed at intersection after
+			// operation complete?
+			return true;
 		}
-
-		int currentNumberPeople = gridPersonCount[y][x];
-
-		// If adding a person, the circle that should be modified should not be
-		// currently used/visible. If removing a person, the circle that should be
-		// modified should be currently used/visible.
-		int indexModifier;
-
-		if (add) {
-			indexModifier = 0;
-		} else {
-			indexModifier = -1;
-		}
-
-		Circle person = (Circle) people.getChildren()
-				.get(y * gridSize * 8 + x * 8 + currentNumberPeople + indexModifier);
-		person.setVisible(add);
-
-		if (add) {
-			gridPersonCount[y][x]++;
-		} else {
-			gridPersonCount[y][x]--;
-		}
-
-		// TODO: Maybe return number of people being displayed at intersection after
-		// operation complete?
-		return true;
+		return false;
 	}
 
 	/**
@@ -184,6 +209,8 @@ public class CityDisplay {
 	 * @return true if successful.
 	 */
 	public boolean busLeft(int x, int y) {
+		// Currently this method is never used because busMoved is used instead and
+		// buses never vanish.
 		return modifyBus(x, y, false);
 	}
 
@@ -198,26 +225,57 @@ public class CityDisplay {
 	 */
 	private boolean modifyBus(int x, int y, boolean arrived) {
 		// TODO: What to do if number of buses exceeds 1?
-		Group busMarkers = null;
 
-		// Because just getting index 1 from root's children list might be error prone.
-		for (int i = 0; i < root.getChildrenUnmodifiable().size(); i++) {
-			if (root.getChildrenUnmodifiable().get(i).getUserData().equals("busMarkers")) {
-				busMarkers = (Group) root.getChildrenUnmodifiable().get(i);
+		// If a bus that is not there tries to leave, returns false.
+		if (gridBusCount[y][x] != 0 || arrived) {
+			boolean removeMarker = gridBusCount[y][x] == 1 && !arrived;
+			boolean addMarker = gridBusCount[y][x] == 0 && arrived;
+
+			if (removeMarker || addMarker) {
+
+				Group busMarkers = null;
+
+				// Because just getting index 1 from root's children list might be error prone.
+				for (int i = 0; i < root.getChildrenUnmodifiable().size(); i++) {
+					if (root.getChildrenUnmodifiable().get(i).getUserData().equals("busMarkers")) {
+						busMarkers = (Group) root.getChildrenUnmodifiable().get(i);
+					}
+				}
+
+				Circle busMarker = (Circle) busMarkers.getChildren().get(y * gridSize + x);
+
+				float fromFade;
+				float toFade;
+				if (arrived) {
+					fromFade = 0f;
+					toFade = 1f;
+				} else {
+					toFade = 0f;
+					fromFade = 1f;
+				}
+
+				// Make bus invisible or visible depending on arrived.
+				FadeTransition fade = new FadeTransition(Duration.millis(1), busMarker);
+				fade.setFromValue(fromFade);
+				fade.setToValue(toFade);
+				fade.play();
+				
 			}
+
+			if (arrived) {
+				gridBusCount[y][x]++;
+			} else {
+				gridBusCount[y][x]--;
+			}
+
+			// TODO: Maybe return number of buses at intersection?
+			return true;
 		}
-
-		Circle busMarker = (Circle) busMarkers.getChildren().get(y * gridSize + x);
-		busMarker.setVisible(arrived);
-
-		// TODO: Maybe return number of buses at intersection?
-		return true;
+		return false;
 	}
 
 	/**
-	 * OPTIONAL: Displays animation of bus marker moving from one intersection to
-	 * another. NOTE: If implemented, it would still use busArrived and busLeft, but
-	 * they should be private and this would be the public equivalent.
+	 * Displays animation of bus marker moving from one intersection to another.
 	 * 
 	 * @param x1 First intersection x.
 	 * @param y1 First intersection y.
@@ -229,28 +287,90 @@ public class CityDisplay {
 		// TODO: For some reason, the bus marker does not return to a symmetrical state
 		// with regard to the intersection circle.
 
-		Group busMarkers = null;
+		// Only works if a bus is actually at the start location.
+		if (gridBusCount[y1][x1] > 0) {
+			// If there is more than one bus at the start location.
+			boolean keepBus = gridBusCount[y1][x1] > 1;
 
-		// Because just getting index 1 from root's children list might be error prone.
-		for (int i = 0; i < root.getChildrenUnmodifiable().size(); i++) {
-			if (root.getChildrenUnmodifiable().get(i).getUserData().equals("busMarkers")) {
-				busMarkers = (Group) root.getChildrenUnmodifiable().get(i);
+			Group busMarkers = null;
+
+			// Because just getting index 1 from root's children list might be error prone.
+			for (int i = 0; i < root.getChildrenUnmodifiable().size(); i++) {
+				if (root.getChildrenUnmodifiable().get(i).getUserData().equals("busMarkers")) {
+					busMarkers = (Group) root.getChildrenUnmodifiable().get(i);
+				}
 			}
+
+			Circle startBus = (Circle) busMarkers.getChildren().get(y1 * gridSize + x1);
+			Circle endBus = (Circle) busMarkers.getChildren().get(y2 * gridSize + x2);
+
+			// Move bus marker from start to end.
+			TranslateTransition translateThere = new TranslateTransition(Duration.millis(2000), startBus);
+			translateThere.setFromX(startBus.getCenterX() - startBus.getRadius() * Math.PI);
+			translateThere.setFromY(startBus.getCenterY() - startBus.getRadius() * Math.PI);
+			translateThere.setToX(endBus.getCenterX() - endBus.getRadius() * Math.PI);
+			translateThere.setToY(endBus.getCenterY() - endBus.getRadius() * Math.PI);
+
+			// Make bus marker from start invisible.
+			FadeTransition fadeOut = new FadeTransition(Duration.millis(1), startBus);
+			fadeOut.setFromValue(1f);
+			fadeOut.setToValue(0f);
+
+			// Make bus marker at end visible.
+			FadeTransition fadeIn = new FadeTransition(Duration.millis(1), endBus);
+			fadeIn.setFromValue(0f);
+			fadeIn.setToValue(1f);
+
+			// Move invisible bus marker from end back to start.
+			TranslateTransition translateBack = new TranslateTransition(Duration.millis(1), startBus);
+			translateBack.setFromX(endBus.getCenterX() - endBus.getRadius() * Math.PI);
+			translateBack.setFromY(endBus.getCenterY() - endBus.getRadius() * Math.PI);
+			translateBack.setToX(startBus.getCenterX() - startBus.getRadius() * Math.PI);
+			translateBack.setToY(startBus.getCenterY() - startBus.getRadius() * Math.PI);
+
+			// Make the two fades occur in unison.
+			ParallelTransition parallelFade = new ParallelTransition();
+			parallelFade.getChildren().addAll(fadeOut, fadeIn);
+
+			if (keepBus) {
+				Circle startPhantom = new Circle(startBus.getRadius(), startBus.getFill());
+				startPhantom.setCenterX(startBus.getCenterX());
+				startPhantom.setCenterY(startBus.getCenterY());
+				startPhantom.setStrokeType(startBus.getStrokeType());
+				startPhantom.setStroke(startBus.getStroke());
+				startPhantom.setStrokeWidth(startBus.getStrokeWidth());
+				busMarkers.getChildren().add(startPhantom);
+
+				FadeTransition phantomFade = new FadeTransition(Duration.millis(1), startPhantom);
+				phantomFade.setFromValue(1f);
+				phantomFade.setToValue(0f);
+				
+				FadeTransition startFadeBack = new FadeTransition(Duration.millis(1), startBus);
+				startFadeBack.setFromValue(0f);
+				startFadeBack.setToValue(1f);
+				
+				ParallelTransition parallelKeepFade = new ParallelTransition();
+				parallelKeepFade.getChildren().addAll(phantomFade, startFadeBack);
+
+				// Make first translation, the fades, the second translation, and the removal of
+				// phantom with replacement by the start marker occur in order.
+				SequentialTransition sequence = new SequentialTransition();
+				sequence.getChildren().addAll(translateThere, parallelFade, translateBack, parallelKeepFade);
+
+				sequence.play();
+			} else {
+				// Make first translation, the fades, and the second translation occur in order.
+				SequentialTransition sequence = new SequentialTransition();
+				sequence.getChildren().addAll(translateThere, parallelFade, translateBack);
+
+				sequence.play();
+			}
+
+			gridBusCount[y1][x1]--;
+			gridBusCount[y2][x2]++;
+
+			return true;
 		}
-
-		Circle startBus = (Circle) busMarkers.getChildren().get(y1 * gridSize + x1);
-		Circle endBus = (Circle) busMarkers.getChildren().get(y2 * gridSize + x2);
-
-		startBus.setVisible(true);
-
-		TranslateTransition translateTransition = new TranslateTransition(Duration.millis(2000), startBus);
-
-		translateTransition.setFromX(startBus.getCenterX() - startBus.getRadius() * Math.PI);
-		translateTransition.setFromY(startBus.getCenterY() - startBus.getRadius() * Math.PI);
-		translateTransition.setToX(endBus.getCenterX() - endBus.getRadius() * Math.PI);
-		translateTransition.setToY(endBus.getCenterY() - endBus.getRadius() * Math.PI);
-
-		translateTransition.play();
 
 		return false;
 	}

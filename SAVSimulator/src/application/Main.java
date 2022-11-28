@@ -43,9 +43,14 @@ public class Main extends Application {
 			
 			
 			
-			cityDisplay.addPerson(3, 0);
+//			cityDisplay.addPerson(3, 0);
+//			cityDisplay.removePerson(3, 0);
+			
+			cityDisplay.busArrived(0, 0);
 			cityDisplay.busArrived(0, 0);
 			cityDisplay.busMoved(0, 0, 4, 5);
+			cityDisplay.busArrived(4, 5);
+			cityDisplay.busMoved(4, 5, 11, 12);
 			
 			// Create City object, then run simulation.
 
