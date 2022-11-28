@@ -1,5 +1,6 @@
 package application;
 
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -40,8 +41,11 @@ public class Main extends Application {
 			
 			// Testing
 			
-			cityDisplay.addPerson(0, 0);
-			cityDisplay.removePerson(0, 0);
+			
+			
+			cityDisplay.addPerson(3, 0);
+			cityDisplay.busArrived(0, 0);
+			cityDisplay.busMoved(0, 0, 4, 5);
 			
 			// Create City object, then run simulation.
 

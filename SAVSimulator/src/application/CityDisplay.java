@@ -1,10 +1,16 @@
 package application;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
+import javafx.animation.TranslateTransition;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.StrokeType;
+import javafx.util.Duration;
 
 /**
  * Deals with graphical output.
@@ -137,14 +143,15 @@ public class CityDisplay {
 		// currently used/visible. If removing a person, the circle that should be
 		// modified should be currently used/visible.
 		int indexModifier;
-		
+
 		if (add) {
 			indexModifier = 0;
 		} else {
 			indexModifier = -1;
 		}
 
-		Circle person = (Circle) people.getChildren().get(y * gridSize * 8 + x * 8 + currentNumberPeople + indexModifier);
+		Circle person = (Circle) people.getChildren()
+				.get(y * gridSize * 8 + x * 8 + currentNumberPeople + indexModifier);
 		person.setVisible(add);
 
 		if (add) {
@@ -166,7 +173,7 @@ public class CityDisplay {
 	 * @return true if successful.
 	 */
 	public boolean busArrived(int x, int y) {
-		return false;
+		return modifyBus(x, y, true);
 	}
 
 	/**
@@ -177,7 +184,34 @@ public class CityDisplay {
 	 * @return true if successful.
 	 */
 	public boolean busLeft(int x, int y) {
-		return false;
+		return modifyBus(x, y, false);
+	}
+
+	/**
+	 * Helper method that can modify bus marker visibility at specified
+	 * intersection.
+	 * 
+	 * @param x       Intersection x.
+	 * @param y       Intersection y.
+	 * @param arrived true for visible, false for hidden.
+	 * @return true if successful.
+	 */
+	private boolean modifyBus(int x, int y, boolean arrived) {
+		// TODO: What to do if number of buses exceeds 1?
+		Group busMarkers = null;
+
+		// Because just getting index 1 from root's children list might be error prone.
+		for (int i = 0; i < root.getChildrenUnmodifiable().size(); i++) {
+			if (root.getChildrenUnmodifiable().get(i).getUserData().equals("busMarkers")) {
+				busMarkers = (Group) root.getChildrenUnmodifiable().get(i);
+			}
+		}
+
+		Circle busMarker = (Circle) busMarkers.getChildren().get(y * gridSize + x);
+		busMarker.setVisible(arrived);
+
+		// TODO: Maybe return number of buses at intersection?
+		return true;
 	}
 
 	/**
@@ -192,6 +226,32 @@ public class CityDisplay {
 	 * @return true if successful.
 	 */
 	public boolean busMoved(int x1, int y1, int x2, int y2) {
+		// TODO: For some reason, the bus marker does not return to a symmetrical state
+		// with regard to the intersection circle.
+
+		Group busMarkers = null;
+
+		// Because just getting index 1 from root's children list might be error prone.
+		for (int i = 0; i < root.getChildrenUnmodifiable().size(); i++) {
+			if (root.getChildrenUnmodifiable().get(i).getUserData().equals("busMarkers")) {
+				busMarkers = (Group) root.getChildrenUnmodifiable().get(i);
+			}
+		}
+
+		Circle startBus = (Circle) busMarkers.getChildren().get(y1 * gridSize + x1);
+		Circle endBus = (Circle) busMarkers.getChildren().get(y2 * gridSize + x2);
+
+		startBus.setVisible(true);
+
+		TranslateTransition translateTransition = new TranslateTransition(Duration.millis(2000), startBus);
+
+		translateTransition.setFromX(startBus.getCenterX() - startBus.getRadius() * Math.PI);
+		translateTransition.setFromY(startBus.getCenterY() - startBus.getRadius() * Math.PI);
+		translateTransition.setToX(endBus.getCenterX() - endBus.getRadius() * Math.PI);
+		translateTransition.setToY(endBus.getCenterY() - endBus.getRadius() * Math.PI);
+
+		translateTransition.play();
+
 		return false;
 	}
 
