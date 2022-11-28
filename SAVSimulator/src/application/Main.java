@@ -29,8 +29,8 @@ public class Main extends Application {
 			Scene scene = new Scene(root, screenSize, screenSize, Color.BLACK);
 
 			// Generate intersection layout. Current total intersections: 225.
-			CityDisplay cityDisplay = new CityDisplay(root, 15);
-			cityDisplay.setupCity(screenSize, 8, 20, 2, 2, 4, 2);
+			CityDisplay cityDisplay = new CityDisplay(root, 15, screenSize, 8, 20, 2, 2, 4, 2);
+			cityDisplay.setupCity();
 
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 
@@ -46,11 +46,19 @@ public class Main extends Application {
 //			cityDisplay.addPerson(3, 0);
 //			cityDisplay.removePerson(3, 0);
 			
-			cityDisplay.busArrived(0, 0);
-			cityDisplay.busArrived(0, 0);
-			cityDisplay.busMoved(0, 0, 4, 5);
-			cityDisplay.busArrived(4, 5);
-			cityDisplay.busMoved(4, 5, 11, 12);
+//			cityDisplay.busArrived(0, 0);
+//			cityDisplay.busArrived(0, 0);
+//			cityDisplay.busMoved(0, 0, 4, 5);
+//			cityDisplay.busArrived(4, 5);
+//			cityDisplay.busMoved(4, 5, 11, 12);
+			
+//			cityDisplay.createBus(0, 0);
+//			cityDisplay.createBus(0, 0);
+//			cityDisplay.removeBus(0, 0);
+			
+//			cityDisplay.busMoved(0, 0, 5, 4);
+//			cityDisplay.busMoved(0, 0, 4, 5);
+//			cityDisplay.busMoved(5, 4, 2, 3);
 			
 			// Create City object, then run simulation.
 
