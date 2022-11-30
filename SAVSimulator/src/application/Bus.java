@@ -1,6 +1,8 @@
 package application;
 
 import java.util.AbstractCollection;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.PriorityQueue;
 
 public abstract class Bus<T extends AbstractCollection<Person>> {
@@ -41,9 +43,9 @@ public abstract class Bus<T extends AbstractCollection<Person>> {
 		} else if (location.getX() > destination.getX()) {
 			direction = Direction.LEFT;
 		} else if (location.getY() < destination.getY()) {
-			direction = Direction.UP;
-		} else if (location.getY() > destination.getY()) {
 			direction = Direction.DOWN;
+		} else if (location.getY() > destination.getY()) {
+			direction = Direction.UP;
 		} else {
 			// Bus is at destination
 			throw new IllegalStateException("Tried to move bus when it is already at its destination. "
@@ -51,19 +53,55 @@ public abstract class Bus<T extends AbstractCollection<Person>> {
 		}
 
 		location = city.oneOver(location, direction);
+
+		// People can reach their destination even when the bus is not trying to get
+		// there.
+		// Sets passengers' locations to current location of bus and then checks if
+		// anyone has reached their destination.
+		
+		// Remove people from passengers later in order to avoid ConcurrentModificationException
+		LinkedList<Person> peopleToRemove = new LinkedList<>();
+		System.out.println(passengers.size());
+		for (Person person : passengers) {
+			person.setLocation(location);
+			System.out.println("here");
+			if (person.getDestination().equals(location)) {
+				System.out.println("there");
+				// TODO: Possibly put this into subclasses so that subclasses that use
+				// PriorityQueue can be more effective using poll.
+				peopleToRemove.add(person);
+				city.removePerson(person);
+			}
+		}
+		
+		for (Person person : peopleToRemove) {
+			passengers.remove(person);
+		}
 	}
 
 	/**
 	 * Picks up as many people as possible at location. Does nothing if no one is
 	 * waiting at stop. Stops picking people up once capacity is reached.
+	 * 
+	 * @return Number of people picked up.
 	 */
-	public void pickup() {
+	public int pickup() {
 		// PriorityQueue based on time waiting at stop.
 		PriorityQueue<Person> peopleAtLoc = city.getPeopleAtIntersection(location);
+		int count = 0;
 
 		while (peopleAtLoc.size() > 0 && passengers.size() <= capacity) {
 			passengers.add(peopleAtLoc.poll());
+			System.out.println("Passengers count: " + passengers.size());
+			count++;
 		}
+		System.out.println("Count: " + count);
+		
+		for (Person person : passengers) {
+			System.out.println("Person: " + person);
+		}
+
+		return count;
 	}
 
 	/**
@@ -75,20 +113,22 @@ public abstract class Bus<T extends AbstractCollection<Person>> {
 	 */
 	public Intersection personSearch(Intersection intersection) {
 		PriorityQueue<Intersection> closeIntersections = city.getClosestIntersections(intersection);
-
-		for (int i = 0; i < closeIntersections.size(); i++) {
+		
+		while (closeIntersections.size() > 0) {
 			Intersection check = closeIntersections.poll();
 			if (city.getPeopleAtIntersection(check).size() > 0) {
 				return check;
 			}
 		}
 
-		// If everyone has been picked up by a bus, the bus should stay in the same location.
+		// If everyone has been picked up by a bus, the bus should stay in the same
+		// location.
 		return intersection;
 	}
-	
+
 	/**
-	 * Sets the destination to an intersection that has at least one person waiting for a ride.
+	 * Sets the destination to an intersection that has at least one person waiting
+	 * for a ride.
 	 */
 	public void findPeople() {
 		setDestination(personSearch(location));
@@ -98,6 +138,7 @@ public abstract class Bus<T extends AbstractCollection<Person>> {
 	 * @param destination The destination.
 	 */
 	protected void setDestination(Intersection destination) {
+		System.out.println("Bus destination: " + destination);
 		this.destination = destination;
 	}
 
@@ -119,6 +160,13 @@ public abstract class Bus<T extends AbstractCollection<Person>> {
 	 */
 	public City getCity() {
 		return city;
+	}
+
+	/**
+	 * @return The destination.
+	 */
+	public Intersection getDestination() {
+		return destination;
 	}
 
 }

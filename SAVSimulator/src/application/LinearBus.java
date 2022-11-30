@@ -33,7 +33,7 @@ public class LinearBus extends Bus<PriorityQueue<Person>> {
 	 * @return Intersection of destination.
 	 */
 	private Intersection getDestinationOfPersonOnBusLongest() {
-		return passengers.poll().getDestination();
+		return passengers.peek().getDestination();
 	}
 
 }

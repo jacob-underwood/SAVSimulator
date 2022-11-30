@@ -115,5 +115,12 @@ public class Person implements Comparable<Person> {
 	public int compareTo(Person o) {
 		return o.getTimeAtStop() - getTimeAtStop();
 	}
+	
+	/**
+	 * Returns location and destination.
+	 */
+	public String toString() {
+		return ("Current location: " + location + "%nDestination: " + DESTINATION).formatted();
+	}
 
 }

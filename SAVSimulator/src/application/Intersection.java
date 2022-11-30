@@ -21,9 +21,26 @@ public class Intersection {
 		 * west. The fastest route is the one with the least turns, so it should just go
 		 * all the way horizontally, then all the way vertically.
 		 */
-		int distance = (other.getX() - x) + (other.getY() - y);
+		int distance = Math.abs(other.getX() - x) + Math.abs(other.getY() - y);
 
-		return Math.abs(distance);
+		return distance;
+	}
+	
+	/**
+	 * Checks if distance between this and other intersection are 0.
+	 * 
+	 * @param obj Other intersection.
+	 * @return true if distance 0.
+	 */
+	public boolean equals(Object obj) {
+		return distanceFrom((Intersection) obj) == 0;
+	}
+	
+	/**
+	 * Returns x and y coordinates of the intersections.
+	 */
+	public String toString() {
+		return x + ", " + y;
 	}
 
 	public int getX() {

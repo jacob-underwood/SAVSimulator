@@ -102,6 +102,25 @@ public class CityDisplay {
 //				ring.setStrokeWidth(ringStrokeSize);
 //				ring.setOpacity(0f);
 //				busMarkers.getChildren().add(ring);
+				
+//				Circle test = new Circle(25, Color.GREEN);
+//				test.setCenterX(350);
+//				test.setCenterY(350);
+//				Group a = new Group();
+//				a.setUserData("a");
+//				a.getChildren().add(test);
+//				
+//				root.getChildren().add(a);
+//				
+//				
+//				TranslateTransition translate2 = new TranslateTransition(Duration.millis(10000), test);
+//				translate2.setFromX(350);
+//				translate2.setFromY(350);
+//				translate2.setToX(300);
+//				translate2.setToY(300);
+//				translate2.setByX(200);
+//				translate2.setByY(200);
+//				translate2.play();
 
 				double personRingXRadius = intersectRadius + ringDistance + ringStrokeSize + personDistance;
 				double personRingYRadius = intersectRadius + ringDistance + ringStrokeSize + personDistance;
@@ -379,18 +398,23 @@ public class CityDisplay {
 			Circle startIntersection = (Circle) intersections.getChildrenUnmodifiable().get(y1 * gridSize + x1);
 			Circle endIntersection = (Circle) intersections.getChildrenUnmodifiable().get(y2 * gridSize + x2);
 			
-			TranslateTransition translate = new TranslateTransition(Duration.millis(2000), busToMove);
-			translate.setFromX(startIntersection.getCenterX() - busToMove.getRadius() * Math.PI);
-			translate.setFromY(startIntersection.getCenterY() - busToMove.getRadius() * Math.PI);
-			translate.setToX(endIntersection.getCenterX() - busToMove.getRadius() * Math.PI);
-			translate.setToY(endIntersection.getCenterY() - busToMove.getRadius() * Math.PI);
+			TranslateTransition translate = new TranslateTransition(Duration.millis(100), busToMove);
+			translate.setByX(endIntersection.getCenterX() - startIntersection.getCenterX());
+			translate.setByY(endIntersection.getCenterY() - startIntersection.getCenterY());
+//			translate.setFromX(startIntersection.getCenterX() - busToMove.getRadius() * Math.PI);
+//			translate.setFromY(startIntersection.getCenterY() - busToMove.getRadius() * Math.PI);
+//			translate.setToX(endIntersection.getCenterX() - busToMove.getRadius() * Math.PI);
+//			translate.setToY(endIntersection.getCenterY() - busToMove.getRadius() * Math.PI);
 			translate.play();
+			
+			
 			
 			busGrid.get(y1).get(x1).remove(0);
 			busGrid.get(y2).get(x2).add(busToMove);
 
 			return true;
 		}
+		
 
 		return false;
 	}

@@ -2,10 +2,13 @@ package application;
 
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -62,12 +65,27 @@ public class Main extends Application {
 			
 			// Create City object, then run simulation.
 
-//			City city = new City(cityDisplay);
+			City city = new City(cityDisplay);
 			
 //			city.runSimulation();
 			
-			CityThread cityThread = new CityThread();
-			(new Thread(new CityThread())).start();
+//			CityThread cityThread = new CityThread();
+//			(new Thread(new CityThread())).start();
+			
+			city.setupSimulation();
+			
+			scene.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+			    @Override
+			    public void handle(MouseEvent mouseEvent) {
+			        city.runSimulation();
+			    }
+			});
+			
+//			for (int i = 0; i < 5; i++) {
+//				city.run();
+//			}
+//			cityDisplay.createBus(5, 3);
+//			cityDisplay.busMoved(5, 3, 5, 4);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
