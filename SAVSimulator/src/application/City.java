@@ -98,7 +98,9 @@ public class City implements Runnable {
 			int startX = startLoc.getX();
 			int startY = startLoc.getY();
 			
-			bus.move();
+			if (bus.getDestination() != bus.getLocation()) {
+				bus.move();
+			}
 			
 			Intersection newLoc = bus.getLocation();
 			int newX = newLoc.getX();
@@ -124,7 +126,7 @@ public class City implements Runnable {
 		}
 
 		// Create people. 500
-		for (int i = 0; i < 1; i++) {
+		for (int i = 0; i < 500; i++) {
 			// Generate starting position.
 			int randStartX = (int) (Math.random() * 15);
 			int randStartY = (int) (Math.random() * 15);
@@ -145,12 +147,12 @@ public class City implements Runnable {
 		}
 
 		// Create buses. 50
-		for (int i = 0; i < 1; i++) {
+		for (int i = 0; i < 50; i++) {
 			// Generate starting position.
-//			int randStartX = (int) (Math.random() * 15);
-//			int randStartY = (int) (Math.random() * 15);
-			int randStartX = 3;
-			int randStartY = 2;
+			int randStartX = (int) (Math.random() * 15);
+			int randStartY = (int) (Math.random() * 15);
+//			int randStartX = 3;
+//			int randStartY = 2;
 			
 			cityDisplay.createBus(randStartX, randStartY);
 

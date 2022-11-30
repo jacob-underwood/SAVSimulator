@@ -91,9 +91,13 @@ public abstract class Bus<T extends AbstractCollection<Person>> {
 		int count = 0;
 
 		while (peopleAtLoc.size() > 0 && passengers.size() <= capacity) {
-			passengers.add(peopleAtLoc.poll());
+			Person person = peopleAtLoc.poll();
+			if (!person.isInBus()) {
+				passengers.add(person);
+				person.setInBus(true);
+				count++;
+			}
 			System.out.println("Passengers count: " + passengers.size());
-			count++;
 		}
 		System.out.println("Count: " + count);
 		

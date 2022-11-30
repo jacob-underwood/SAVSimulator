@@ -147,6 +147,7 @@ public class CityDisplay {
 	 * @return true if successful.
 	 */
 	public boolean addPerson(int x, int y) {
+		System.out.println("ADD PERSON.");
 		return modifyPerson(x, y, true);
 	}
 
@@ -177,6 +178,10 @@ public class CityDisplay {
 		// people are already at an intersection. Though, gridPersonCount maintains the
 		// correct number. Now, returns false.
 
+		if (gridPersonCount[y][x] == 0 && !add) {
+			return false;
+		}
+		
 		if (gridPersonCount[y][x] < 8) {
 			Group people = null;
 
@@ -220,17 +225,17 @@ public class CityDisplay {
 			fade.setToValue(toFade);
 			fade.play();
 
-			if (add) {
-				gridPersonCount[y][x]++;
-			} else {
-				gridPersonCount[y][x]--;
-			}
-
 			// TODO: Maybe return number of people being displayed at intersection after
 			// operation complete?
-			return true;
 		}
-		return false;
+		
+		if (add) {
+			gridPersonCount[y][x]++;
+		} else {
+			gridPersonCount[y][x]--;
+		}
+		
+		return true;
 	}
 
 	/**
