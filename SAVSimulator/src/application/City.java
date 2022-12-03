@@ -16,7 +16,7 @@ public class City implements Runnable {
 	// destination and are thus removed from the simulation.
 	private LinkedList<Person> people;
 	// List of all buses; number does not change after instantiated.
-	private ArrayList<LinearBus> buses;
+	private ArrayList<AverageBus> buses;
 	// All Intersections in a city.
 	private Intersection[][] grid;
 
@@ -26,9 +26,12 @@ public class City implements Runnable {
 
 	// Stores CityDisplay object to manipulate graphical output.
 	private CityDisplay cityDisplay;
+	// If true, displays simulation in graphical output.
+	private boolean display;
 
-	public City(CityDisplay cityDisplay) {
+	public City(CityDisplay cityDisplay, boolean display) {
 		this.cityDisplay = cityDisplay;
+		this.display = display;
 
 		this.people = new LinkedList<Person>();
 		this.buses = new ArrayList<>();
@@ -49,14 +52,13 @@ public class City implements Runnable {
 //						runSimulation();
 //					}
 //				}).start();
-				
-				runSimulation();
 
-				Thread.sleep(1000);
+			runSimulation();
+
+			Thread.sleep(1000);
 
 //				step++;
-				
-				System.out.println("here");
+
 
 //			}
 		} catch (InterruptedException e) {
@@ -69,49 +71,74 @@ public class City implements Runnable {
 	 * buses' destinations 4. Handling all other fundamental tasks in a step-wise
 	 * manner
 	 * 
-	 * @return Current step.
+	 * @return Next step or -1 if there is no next step.
 	 */
 	public int runSimulation() {
+		ArrayList<AverageBus> busesToRemove = new ArrayList<>();
 
-		for (LinearBus bus : buses) {
+		for (AverageBus bus : buses) {
 			if (people.size() == 0) {
 				// TODO: Make this do something better than close out of program.
-				System.out.println("Everyone has reached their destination!");
-				System.exit(0);
+				System.out.println("Everyone has reached their destination! Steps: " + step + ".");
+//				System.exit(0);
+				return -1;
 			}
-			
+
 			// TODO: It might be more intuitive to have the bus pick up after it moves, but
 			// also pick up once at the beginning of the simulation.
-			int pickedUp = bus.pickup();
-			for (int i = 0; i < pickedUp; i++) {
+			if (display) {
+				int pickedUp = bus.pickup();
+				for (int i = 0; i < pickedUp; i++) {
 //				Platform.runLater(() -> {cityDisplay.removePerson(bus.getLocation().getX(), bus.getLocation().getY());});
-				cityDisplay.removePerson(bus.getLocation().getX(), bus.getLocation().getY());
+					cityDisplay.removePerson(bus.getLocation().getX(), bus.getLocation().getY());
+				}
+			} else {
+				bus.pickup();
 			}
-			
+
 			Intersection startLoc = bus.getLocation();
 			Intersection dest = bus.getDestination();
 
 			if (dest == null || startLoc.equals(dest)) {
 				bus.generateDestination();
 			}
-			
+
 			int startX = startLoc.getX();
 			int startY = startLoc.getY();
-			
+
 			if (bus.getDestination() != bus.getLocation()) {
 				bus.move();
+				
+				Intersection newLoc = bus.getLocation();
+				int newX = newLoc.getX();
+				int newY = newLoc.getY();
+
+//				Platform.runLater(() -> {cityDisplay.busMoved(startX, startY, newX, newY);});
+				if (display) {
+					cityDisplay.busMoved(startX, startY, newX, newY);
+				}
+				
+			} else {
+				if (display) {
+					int finishedBusX = bus.getLocation().getX();
+					int finishedBusY = bus.getLocation().getY();
+					cityDisplay.removeBus(finishedBusX, finishedBusY);
+					
+					busesToRemove.add(bus);
+				}
+				
+				
 			}
 			
-			Intersection newLoc = bus.getLocation();
-			int newX = newLoc.getX();
-			int newY = newLoc.getY();
-			
-//			Platform.runLater(() -> {cityDisplay.busMoved(startX, startY, newX, newY);});
-			cityDisplay.busMoved(startX, startY, newX, newY);
-
+		}
+		
+		for (AverageBus bus : busesToRemove) {
+			buses.remove(bus);
 		}
 
-		return -1;
+		step++;
+
+		return step;
 	}
 
 	/**
@@ -130,18 +157,28 @@ public class City implements Runnable {
 			// Generate starting position.
 			int randStartX = (int) (Math.random() * 15);
 			int randStartY = (int) (Math.random() * 15);
+//			int randStartX = 3;
+//			int randStartY = 2;
 
 			// Generate destination.
-			int randDestX = (int) (Math.random() * 15);
-			int randDestY = (int) (Math.random() * 15);
+			int randDestX;
+			int randDestY;
 
-			cityDisplay.addPerson(randStartX, randStartY);
+			do {
+				randDestX = (int) (Math.random() * 15);
+				randDestY = (int) (Math.random() * 15);
+			} while (randDestX == randStartX || randDestY == randStartY);
 
+			if (display) {
+				cityDisplay.addPerson(randStartX, randStartY);
+			}
+			
 			Intersection start = grid[randStartY][randStartX];
 			Intersection end = grid[randDestY][randDestX];
+//			System.out.println("Person's destination: " + end);
 			Person person = new Person(start, end);
-			
-			System.out.println(person);
+
+//			System.out.println(person);
 
 			people.add(person);
 		}
@@ -153,11 +190,13 @@ public class City implements Runnable {
 			int randStartY = (int) (Math.random() * 15);
 //			int randStartX = 3;
 //			int randStartY = 2;
-			
-			cityDisplay.createBus(randStartX, randStartY);
 
+			if (display) {
+				cityDisplay.createBus(randStartX, randStartY);
+			}
+			
 			Intersection start = grid[randStartY][randStartX];
-			LinearBus bus = new LinearBus(start, 20, this);
+			AverageBus bus = new AverageBus(start, 20, this);
 
 			buses.add(bus);
 		}
@@ -222,7 +261,7 @@ public class City implements Runnable {
 
 		PriorityQueue<Intersection> closeIntersections = new PriorityQueue<>(grid.length * grid.length,
 				intersectionComparator);
-		
+
 		// Did not use PriorityQueue.addAll because grid would have to be put into a
 		// Collections object.
 		for (Intersection[] intersections : grid) {
@@ -233,16 +272,16 @@ public class City implements Runnable {
 
 		return closeIntersections;
 	}
-	
+
 	/**
 	 * Removes person from people instance variable.
 	 * 
 	 * @param person Person to remove.
 	 */
 	public void removePerson(Person person) {
-		System.out.println(people.size());
+//		System.out.println(people.size());
 		people.remove(person);
-		System.out.println(people.size());
+//		System.out.println(people.size());
 	}
 
 	/**

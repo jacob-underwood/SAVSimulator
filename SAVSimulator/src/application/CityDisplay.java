@@ -147,7 +147,7 @@ public class CityDisplay {
 	 * @return true if successful.
 	 */
 	public boolean addPerson(int x, int y) {
-		System.out.println("ADD PERSON.");
+//		System.out.println("ADD PERSON.");
 		return modifyPerson(x, y, true);
 	}
 

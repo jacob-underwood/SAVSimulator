@@ -28,9 +28,9 @@ public abstract class LinkedBus extends Bus<LinkedList<Person>> {
 			Person other = passengers.get(i);
 			
 			// Distance of other's destination from current bus location.
-			int otherDistance = getLocation().distanceFrom(other.getDestination());
+			int otherDistance = intersection.distanceFrom(other.getDestination());
 			// Distance of chosen's distance from current bus location.
-			int chosenDistance = getLocation().distanceFrom(chosen.getDestination());
+			int chosenDistance = intersection.distanceFrom(chosen.getDestination());
 			
 			if (otherDistance < chosenDistance) {
 				chosen = other;

@@ -61,12 +61,10 @@ public abstract class Bus<T extends AbstractCollection<Person>> {
 		
 		// Remove people from passengers later in order to avoid ConcurrentModificationException
 		LinkedList<Person> peopleToRemove = new LinkedList<>();
-		System.out.println(passengers.size());
+//		System.out.println(passengers.size());
 		for (Person person : passengers) {
 			person.setLocation(location);
-			System.out.println("here");
 			if (person.getDestination().equals(location)) {
-				System.out.println("there");
 				// TODO: Possibly put this into subclasses so that subclasses that use
 				// PriorityQueue can be more effective using poll.
 				peopleToRemove.add(person);
@@ -86,6 +84,8 @@ public abstract class Bus<T extends AbstractCollection<Person>> {
 	 * @return Number of people picked up.
 	 */
 	public int pickup() {
+		// TODO: Pick up only people who are going in the same direction as the bus' current destination?
+		
 		// PriorityQueue based on time waiting at stop.
 		PriorityQueue<Person> peopleAtLoc = city.getPeopleAtIntersection(location);
 		int count = 0;
@@ -97,13 +97,13 @@ public abstract class Bus<T extends AbstractCollection<Person>> {
 				person.setInBus(true);
 				count++;
 			}
-			System.out.println("Passengers count: " + passengers.size());
+//			System.out.println("Passengers count: " + passengers.size());
 		}
-		System.out.println("Count: " + count);
+//		System.out.println("Count: " + count);
 		
-		for (Person person : passengers) {
-			System.out.println("Person: " + person);
-		}
+//		for (Person person : passengers) {
+//			System.out.println("Person: " + person);
+//		}
 
 		return count;
 	}
@@ -142,7 +142,7 @@ public abstract class Bus<T extends AbstractCollection<Person>> {
 	 * @param destination The destination.
 	 */
 	protected void setDestination(Intersection destination) {
-		System.out.println("Bus destination: " + destination);
+//		System.out.println("Bus destination: " + destination);
 		this.destination = destination;
 	}
 

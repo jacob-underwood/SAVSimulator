@@ -48,6 +48,8 @@ public class AverageBus extends LinkedBus {
 		
 		Intersection average = getCity().getGrid()[averageY][averageX];
 		
+//		System.out.println("Average: " + average);
+		
 		return average;
 	}
 	
