@@ -52,8 +52,10 @@ public class City<T extends Bus<?>> {
 
 		for (T bus : buses) {
 			if (people.size() == 0) {
-				// TODO: Make this do something better than close out of program.
-				System.out.println("Everyone has reached their destination! Steps: " + step + ".");
+				// TODO: Make this do something better than print/close out of program.
+				String[] busTypeClassInfo = typeOfBus.toString().split("[.]");
+				String busType = busTypeClassInfo[busTypeClassInfo.length - 1];
+				System.out.println("Everyone has reached their destination! Bus Type: " + busType + ". Steps: " + step + ".");
 //				System.exit(0);
 				return -1;
 			}

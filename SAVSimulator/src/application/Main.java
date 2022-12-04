@@ -19,9 +19,11 @@ public class Main extends Application {
 		List<String> paramsList = params.getRaw();
 		
 		boolean display = true;
+		String busType = null;
 		
 		try {
 			display = Boolean.parseBoolean(paramsList.get(0));
+			busType = paramsList.get(1);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.err.print(e.getClass().getName() + ": " + e.getMessage());
@@ -49,7 +51,16 @@ public class Main extends Application {
 			if (display) {
 				primaryStage.show();
 				
-				City<AverageBus> city = new City<>(cityDisplay, AverageBus.class, true);
+				City<?> city;
+				
+				if (busType.equals("average")) {
+					city = new City<AverageBus>(cityDisplay, AverageBus.class, true);
+				} else if (busType.equals("linear")) {
+					city = new City<LinearBus>(cityDisplay, LinearBus.class, true);
+				} else {
+					city = new City<ProximityBus>(cityDisplay, ProximityBus.class, true);
+				}
+				
 				city.setupSimulation();
 				
 				scene.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
@@ -70,7 +81,16 @@ public class Main extends Application {
 				int stepSum = 0;
 				
 				for (int i = 0; i < count; i++) {
-					City<AverageBus> city = new City<>(cityDisplay, AverageBus.class, false);
+					City<?> city;
+					
+					if (busType.equals("average")) {
+						city = new City<AverageBus>(cityDisplay, AverageBus.class, true);
+					} else if (busType.equals("linear")) {
+						city = new City<LinearBus>(cityDisplay, LinearBus.class, true);
+					} else {
+						city = new City<ProximityBus>(cityDisplay, ProximityBus.class, true);
+					}
+					
 					city.setupSimulation();
 					
 					int step = 0;
