@@ -7,7 +7,7 @@ import java.util.PriorityQueue;
  */
 public class LinearBus extends Bus<PriorityQueue<Person>> {
 
-	public LinearBus(Intersection location, int capacity, City city) {
+	public LinearBus(Intersection location, int capacity, City<LinearBus> city) {
 		super(location, capacity, city);
 
 		passengers = new PriorityQueue<>();

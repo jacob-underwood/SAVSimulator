@@ -4,15 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 import javafx.animation.FadeTransition;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.ParallelTransition;
-import javafx.animation.SequentialTransition;
-import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
 import javafx.scene.Group;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.StrokeType;
@@ -312,66 +305,6 @@ public class CityDisplay {
 		return false;
 
 //		return modifyBus(x, y, false);
-	}
-
-	/**
-	 * Helper method that can modify bus marker visibility at specified
-	 * intersection.
-	 * 
-	 * @param x       Intersection x.
-	 * @param y       Intersection y.
-	 * @param arrived true for visible, false for hidden.
-	 * @return true if successful.
-	 */
-	private boolean modifyBus(int x, int y, boolean arrived) {
-//		// TODO: What to do if number of buses exceeds 1?
-//
-//		// If a bus that is not there tries to leave, returns false.
-//		if (gridBusCount[y][x] != 0 || arrived) {
-//			boolean removeMarker = gridBusCount[y][x] == 1 && !arrived;
-//			boolean addMarker = gridBusCount[y][x] == 0 && arrived;
-//
-//			if (removeMarker || addMarker) {
-//
-//				Group busMarkers = null;
-//
-//				// Because just getting index 1 from root's children list might be error prone.
-//				for (int i = 0; i < root.getChildrenUnmodifiable().size(); i++) {
-//					if (root.getChildrenUnmodifiable().get(i).getUserData().equals("busMarkers")) {
-//						busMarkers = (Group) root.getChildrenUnmodifiable().get(i);
-//					}
-//				}
-//
-//				Circle busMarker = (Circle) busMarkers.getChildren().get(y * gridSize + x);
-//
-//				float fromFade;
-//				float toFade;
-//				if (arrived) {
-//					fromFade = 0f;
-//					toFade = 1f;
-//				} else {
-//					toFade = 0f;
-//					fromFade = 1f;
-//				}
-//
-//				// Make bus invisible or visible depending on arrived.
-//				FadeTransition fade = new FadeTransition(Duration.millis(1), busMarker);
-//				fade.setFromValue(fromFade);
-//				fade.setToValue(toFade);
-//				fade.play();
-//
-//			}
-//
-//			if (arrived) {
-//				gridBusCount[y][x]++;
-//			} else {
-//				gridBusCount[y][x]--;
-//			}
-//
-//			// TODO: Maybe return number of buses at intersection?
-//			return true;
-//		}
-		return false;
 	}
 
 	/**

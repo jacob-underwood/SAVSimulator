@@ -1,24 +1,24 @@
 package application;
 
-import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 
-import javafx.application.Platform;
-
 /**
  * Simulation driver.
  */
-public class City implements Runnable {
+public class City<T extends Bus<?>> {
 
 	// List of all people in simulation; number changes as people reach their
 	// destination and are thus removed from the simulation.
 	private LinkedList<Person> people;
 	// List of all buses; number does not change after instantiated.
-	private ArrayList<AverageBus> buses;
+	private ArrayList<T> buses;
 	// All Intersections in a city.
 	private Intersection[][] grid;
+	
+	// Class for buses (LinearBus, AverageBus, ProximityBus)
+	private Class<T> typeOfBus;
 
 	// Current step (time) the simulation is on. For example, each step could be 1
 	// minute.
@@ -29,41 +29,15 @@ public class City implements Runnable {
 	// If true, displays simulation in graphical output.
 	private boolean display;
 
-	public City(CityDisplay cityDisplay, boolean display) {
+	public City(CityDisplay cityDisplay, Class<T> typeOfBus, boolean display) {
 		this.cityDisplay = cityDisplay;
+		this.typeOfBus = typeOfBus;
 		this.display = display;
 
 		this.people = new LinkedList<Person>();
 		this.buses = new ArrayList<>();
 		this.grid = new Intersection[15][15];
 		this.step = 0;
-	}
-
-	@Override
-	public void run() {
-		try {
-//			int step = 0;
-//
-//			while (step < 5) {
-
-//				new Thread(new Runnable() {
-//					@Override
-//					public void run() {
-//						runSimulation();
-//					}
-//				}).start();
-
-			runSimulation();
-
-			Thread.sleep(1000);
-
-//				step++;
-
-
-//			}
-		} catch (InterruptedException e) {
-			System.err.print(e);
-		}
 	}
 
 	/**
@@ -74,9 +48,9 @@ public class City implements Runnable {
 	 * @return Next step or -1 if there is no next step.
 	 */
 	public int runSimulation() {
-		ArrayList<AverageBus> busesToRemove = new ArrayList<>();
+		ArrayList<T> busesToRemove = new ArrayList<>();
 
-		for (AverageBus bus : buses) {
+		for (T bus : buses) {
 			if (people.size() == 0) {
 				// TODO: Make this do something better than close out of program.
 				System.out.println("Everyone has reached their destination! Steps: " + step + ".");
@@ -132,7 +106,7 @@ public class City implements Runnable {
 			
 		}
 		
-		for (AverageBus bus : busesToRemove) {
+		for (T bus : busesToRemove) {
 			buses.remove(bus);
 		}
 
@@ -196,7 +170,20 @@ public class City implements Runnable {
 			}
 			
 			Intersection start = grid[randStartY][randStartX];
-			AverageBus bus = new AverageBus(start, 20, this);
+//			T bus = new T(start, 20, this);
+			T bus = null;
+			
+			Class<?>[] constructorArgs = new Class[3];
+			constructorArgs[0] = Intersection.class;
+			constructorArgs[1] = int.class;
+			constructorArgs[2] = City.class;
+			
+			try {
+				bus = (T) typeOfBus.getDeclaredConstructor(constructorArgs).newInstance(start, 20, this);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
 
 			buses.add(bus);
 		}

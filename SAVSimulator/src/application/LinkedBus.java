@@ -7,7 +7,7 @@ import java.util.LinkedList;
  */
 public abstract class LinkedBus extends Bus<LinkedList<Person>> {
 
-	public LinkedBus(Intersection location, int capacity, City city) {
+	public LinkedBus(Intersection location, int capacity, City<? extends LinkedBus> city) {
 		super(location, capacity, city);
 		
 		passengers = new LinkedList<>();

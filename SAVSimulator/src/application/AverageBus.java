@@ -7,7 +7,7 @@ import java.util.LinkedList;
  */
 public class AverageBus extends LinkedBus {
 
-	public AverageBus(Intersection location, int capacity, City city) {
+	public AverageBus(Intersection location, int capacity, City<AverageBus> city) {
 		super(location, capacity, city);
 		
 		passengers = new LinkedList<>();

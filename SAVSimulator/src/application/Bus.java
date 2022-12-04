@@ -1,7 +1,6 @@
 package application;
 
 import java.util.AbstractCollection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 
@@ -19,9 +18,9 @@ public abstract class Bus<T extends AbstractCollection<Person>> {
 
 	// Access to the city to know the location of people waiting and the grid
 	// layout.
-	private City city;
+	private City<? extends Bus<?>> city;
 
-	public Bus(Intersection location, int capacity, City city) {
+	public Bus(Intersection location, int capacity, City<? extends Bus<?>> city) {
 		this.location = location;
 		this.capacity = capacity;
 		this.city = city;
@@ -162,7 +161,7 @@ public abstract class Bus<T extends AbstractCollection<Person>> {
 	/**
 	 * @return the city.
 	 */
-	public City getCity() {
+	public City<? extends Bus<?>> getCity() {
 		return city;
 	}
 

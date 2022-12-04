@@ -1,29 +1,35 @@
 package application;
 
-import javafx.animation.Timeline;
+import java.util.List;
+
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.event.EventHandler;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.StrokeType;
 
 public class Main extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
+		Parameters params = getParameters();
+		List<String> paramsList = params.getRaw();
+		
+		boolean display = true;
+		
 		try {
+			display = Boolean.parseBoolean(paramsList.get(0));
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.print(e.getClass().getName() + ": " + e.getMessage());
+		}
+		
+		try {
+			// TODO: Make it so CityDisplay is not even required in City so simulations to test data can be more efficient.
 			Group root = new Group();
-
-			// Get screen sizes.
-//			double screenX = Screen.getPrimary().getBounds().getMaxX() - screenXBorderPixels;
-//			double screenY = Screen.getPrimary().getBounds().getMaxY() - screenYBorderPixels;
 
 			int screenSize = 700;
 
@@ -38,68 +44,48 @@ public class Main extends Application {
 			primaryStage.setScene(scene);
 			primaryStage.setTitle("SAV Simulator");
 
-			primaryStage.show();
-
-			// Testing
-
-//			cityDisplay.addPerson(3, 0);
-//			cityDisplay.removePerson(3, 0);
-
-//			cityDisplay.busArrived(0, 0);
-//			cityDisplay.busArrived(0, 0);
-//			cityDisplay.busMoved(0, 0, 4, 5);
-//			cityDisplay.busArrived(4, 5);
-//			cityDisplay.busMoved(4, 5, 11, 12);
-
-//			cityDisplay.createBus(0, 0);
-//			cityDisplay.createBus(0, 0);
-//			cityDisplay.removeBus(0, 0);
-
-//			cityDisplay.busMoved(0, 0, 5, 4);
-//			cityDisplay.busMoved(0, 0, 4, 5);
-//			cityDisplay.busMoved(5, 4, 2, 3);
-
 			// Create City object, then run simulation.
-
-//			int count = 100;
-//			int stepSum = 0;
-//			
-//			for (int i = 0; i < count; i++) {
-				City city = new City(cityDisplay, true);
-
-//			city.runSimulation();
-
-//			CityThread cityThread = new CityThread();
-//			(new Thread(new CityThread())).start();
-
+				
+			if (display) {
+				primaryStage.show();
+				
+				City<AverageBus> city = new City<>(cityDisplay, AverageBus.class, true);
 				city.setupSimulation();
-////				
-//				int step = 0;
-//				int maxStep = 0;
-//				
-//				while (step != -1) {
-//					maxStep = step;
-//					step = city.runSimulation();
-//				}
-//				
-//				stepSum += maxStep;
-//
-//			}
-//			
-//			System.out.println("AVERAGE STEP COUNT: " + (stepSum / count));
-
-			scene.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
-				@Override
-				public void handle(MouseEvent mouseEvent) {
-					city.runSimulation();
+				
+				scene.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+					@Override
+					public void handle(MouseEvent mouseEvent) {
+						city.runSimulation();
+					}
+				});
+				
+				scene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+					@Override
+					public void handle(KeyEvent keyEvent) {
+						city.runSimulation();
+					}
+				});
+			} else {
+				int count = 100;
+				int stepSum = 0;
+				
+				for (int i = 0; i < count; i++) {
+					City<AverageBus> city = new City<>(cityDisplay, AverageBus.class, false);
+					city.setupSimulation();
+					
+					int step = 0;
+					int maxStep = 0;
+					
+					while (step != -1) {
+						maxStep = step;
+						step = city.runSimulation();
+					}
+					
+					stepSum += maxStep;
 				}
-			});
-
-//			for (int i = 0; i < 5; i++) {
-//				city.run();
-//			}
-//			cityDisplay.createBus(5, 3);
-//			cityDisplay.busMoved(5, 3, 5, 4);
+				
+				System.out.println("AVERAGE STEP COUNT: " + (stepSum / count));
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
