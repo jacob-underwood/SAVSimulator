@@ -15,6 +15,9 @@ public class Main extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
+		
+		// Parameters: display? algorithm
+		
 		Parameters params = getParameters();
 		List<String> paramsList = params.getRaw();
 		
@@ -105,6 +108,7 @@ public class Main extends Application {
 				}
 				
 				System.out.println("AVERAGE STEP COUNT: " + (stepSum / count));
+				System.exit(0);
 			}
 
 		} catch (Exception e) {
